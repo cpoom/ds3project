@@ -1,0 +1,129 @@
+
+STUDY DESIGN:
+The raw dataset was obtained from UCI's website.  It can be downloaded using the following R code:
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip","getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip")
+Unzipping the zip creates a directory called "UCI HAR Dataset" that contains the following files:
+	README.txt:   text file describing the  original raw data, the experiment used to collect 				it and the files contained in the dataset
+	activity_labels.txt:   This file contains the textual descriptions of the activities that the 				test subjects (cell phone users) performed:  Walking, Sitting, etc.  This 				information is used to provide text describing the activity being studied 			in each obseration in our dataset instead of using the activity number.
+	features.txt:      This file contains a list of the variables in the raw dataset.  It is used to 				provide column names for the raw dataset once loaded into our script.
+	features_info.txt:  This is a code book describing the variables in the raw dataset.
+	There are also 2 subdirectories ("train" and "test") that contain the observation data.  	These are identically structured data but form two sub-groups of the overall data.  Our 	script combines these 2 datasets.  
+	Here are the files in those directories:
+		train/X_train.txt & test/X_test.txt:  These files contain the observation data for, 			respectively, the training and test datasets.
+		train/subject_train.txt & test/subject_test.txt:  These files contain the subject 				number for each row of the training and test datasets, respectively.  				Our script adds this information as a column in our observation data.
+		train/y_train.txt & test/y_test.txt:  These files contain the activity number for 				each row of the training and test datasets, respectively. Our script  				translates this activity number to the corresponding text description 				from the activity_lables.txt file and adds this activity description as a 				column in our observation data.
+		Both the "train" and "test" directories have a child directory called "Inertial 			Signals".  The data in those directories was not used in the script.
+	Once the data have been unzipped, the user must set the working directory to the directory created by the zip called "UCI HAR Dataset".  From there the script is run. It has no parameters and returns a dataset.  The dataset is a tidy dataset that combines the test and training datasets, groups them by subject and activity and then takes the average of each variable that contains the text "mean" or "std" in there column name.
+	setwd("./UCI HAR Dataset")
+	df<-run_analysis()
+
+SUMMARY CHOICES:
+The output dataset contains the raw data grouped by test subject and the activity being observed.  Every variable is an average (for that subject/activity) of a variable from the raw dataset.  The only raw dataset variables that are averaged and included in the output dataset are the ones that are means or standard deviations.  These summary choices are per the assignment instructions.
+
+CODE BOOK:
+As mentioned in the SUMMARY CHOICES section, the output dataframe is grouped by subjectid and activity (the first two columns).  Every column thereafter is a per-group average of one of the raw dataset variables.  Those original variables are documented on the UCI website: http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones	
+UCI conducted observations of 30 Samsung Galaxy cell phone users and got triaxial reading from their cell phones' gyroscope and accelerometer as they were doing one a handful of activities.
+	VARIABLES:
+	subjectid:  The identifier of the cell phone user.  An integer in range from 1 to 30.
+	activity:  The observed activity.  This factor variable has the following levels:
+			WALKING
+			WALKING_UPSTAIRS
+			WALKING_DOWNSTAIRS
+			SITTING
+			STANDING
+			LAYING
+	
+	The remaining variables of the dataset are average (for the subjectid/activity grouping)of one of the raw dataset variables.
+
+UNITS:  The measurement of each feature has been normalized and bounded within [-1,1].	
+	
+	The name of each of the output dataset variables below is based on the original dataset variable names with the following changes:
+
+	- the word "average" has been prepended to indicate the 			value is an average of the underlying variable
+	- the variable name has been changed to all lowercase
+	- any non-alphanumeric characters have been removed
+	- the word "axis" has been added to "X", "Y" and "Z" to 			clarify that it is the X-axis, Y-axis or Z-axis that is
+		being referred to.
+	- certain other name parts have been expanded to give a 			clearer idea what they are referring to.
+
+	Here are the final versions of these variable names:
+
+		averagetbodyacceleratormeanxaxis
+          	averagetbodyacceleratormeanyaxis
+          	averagetbodyacceleratormeanzaxis
+          	averagetbodyacceleratorstdxaxis
+          	averagetbodyacceleratorstdyaxis
+          	averagetbodyacceleratorstdzaxis
+  		averagetgravityacceleratormeanxaxis
+           averagetgravityacceleratormeanyaxis
+           averagetgravityacceleratormeanzaxis
+          averagetgravityacceleratorstdxaxis
+          averagetgravityacceleratorstdyaxis
+          averagetgravityacceleratorstdzaxis
+          averagetbodyacceleratorjerkmeanxaxis
+          averagetbodyacceleratorjerkmeanyaxis
+          averagetbodyacceleratorjerkmeanzaxis
+          averagetbodyacceleratorjerkstdxaxis
+          averagetbodyacceleratorjerkstdyaxis
+          averagetbodyacceleratorjerkstdzaxis
+          averagetbodygyromeanxaxis
+          averagetbodygyromeanyaxis
+          averagetbodygyromeanzaxis
+          averagetbodygyrostdxaxis
+          averagetbodygyrostdyaxis
+          averagetbodygyrostdzaxis
+          averagetbodygyrojerkmeanxaxis
+          averagetbodygyrojerkmeanyaxis
+          averagetbodygyrojerkmeanzaxis
+          averagetbodygyrojerkstdxaxis
+          averagetbodygyrojerkstdyaxis
+          averagetbodygyrojerkstdzaxis
+          averagetbodyacceleratormagmean
+          averagetbodyacceleratormagstd
+          averagetgravityacceleratormagmean
+          averagetgravityacceleratormagstd
+          averagetbodyacceleratorjerkmagmean
+          averagetbodyacceleratorjerkmagstd
+          averagetbodygyromagmean
+          averagetbodygyromagstd
+          averagetbodygyrojerkmagmean
+          averagetbodygyrojerkmagstd
+          averagefbodyacceleratormeanxaxis
+          averagefbodyacceleratormeanyaxis
+          averagefbodyacceleratormeanzaxis
+          averagefbodyacceleratorstdxaxis
+          averagefbodyacceleratorstdyaxis
+          averagefbodyacceleratorstdzaxis
+          averagefbodyacceleratormeanfreqxaxis
+          averagefbodyacceleratormeanfreqyaxis
+          averagefbodyacceleratormeanfreqzaxis
+          averagefbodyacceleratorjerkmeanxaxis
+          averagefbodyacceleratorjerkmeanyaxis
+          averagefbodyacceleratorjerkmeanzaxis
+          averagefbodyacceleratorjerkstdxaxis
+          averagefbodyacceleratorjerkstdyaxis
+          averagefbodyacceleratorjerkstdzaxis
+          averagefbodyacceleratorjerkmeanfreqxaxis
+          averagefbodyacceleratorjerkmeanfreqyaxis
+          averagefbodyacceleratorjerkmeanfreqzaxis
+          averagefbodygyromeanxaxis
+          averagefbodygyromeanyaxis
+          averagefbodygyromeanzaxis
+          averagefbodygyrostdxaxis
+          averagefbodygyrostdyaxis
+          averagefbodygyrostdzaxis
+          averagefbodygyromeanfreqxaxis
+          averagefbodygyromeanfreqyaxis
+          averagefbodygyromeanfreqzaxis
+          averagefbodyacceleratormagmean
+          averagefbodyacceleratormagstd
+          averagefbodyacceleratormagmeanfreq
+          averagefbodybodyacceleratorjerkmagmean
+          averagefbodybodyacceleratorjerkmagstd
+          averagefbodybodyacceleratorjerkmagmeanefreq
+          averagefbodybodygyromagmean
+	    averagefbodybodygyromagstd
+          averagefbodybodygyromagmeanfreq
+          averagefbodybodygyrojerkmagmean
+          averagefbodybodygyrojerkmagstd
+          averagefbodybodygyrojerkmagmeanfreq
